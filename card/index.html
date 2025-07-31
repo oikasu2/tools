@@ -1,0 +1,532 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>語詞卡網頁</title>
+<style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.show {
+    display: block !important;
+}
+
+.menuContainer div {
+    padding-left: 10px;
+    background-color: white;
+    z-index: 999;
+}
+
+.hide {
+    display: none;
+}
+
+.wordCard {
+    position: absolute;
+    padding: 4px 8px;
+    font-size: 16px;
+    white-space: nowrap;
+    display: inline-block;
+    user-select: none;
+}
+
+#fontSelectMenu,
+#fontSizeSelectMenu {
+    display: block;
+}
+
+ruby {
+    ruby-align: over;
+    text-align: center;
+    display: inline-block;
+    margin-right: 0.2em;
+    line-height: 80%;
+    font-size: 80%
+}
+
+rt {
+    font-size: 125%;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 34px;
+  padding: 8px 4px;
+  border-radius: 24px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.inputContainer:hover {
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+    border-color: rgba(223,225,229,0);
+}
+
+.inputContainer.expanded {
+  width: 360px;
+  padding: 8px 15px;
+}
+
+.inputContainer:not(.expanded) .select-container,
+.inputContainer:not(.expanded) .separator,
+.inputContainer:not(.expanded) #wordInput {
+  display: none;
+}
+@media screen and (max-width: 768px) {
+.inputContainer {
+  width: 34px;
+  }
+  .inputContainer.expanded {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .inputContainer.expanded {
+    width: 360px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+    .tool-controls {
+  top: 20px;
+  left: 20px;
+        width: 90%;  /* 設定寬度為視窗的 90% */
+    }
+
+}
+
+.separator {
+    color: #dfe1e5;
+    position: absolute;
+    right: 60px;
+    margin: 0 8px;
+    height: 24px;
+    width: 1px;
+    background-color: #dfe1e5;
+    opacity: 0.6;
+}
+.color-preview {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+    border: 1px solid #dfe1e5;
+}
+.select-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    margin: 0 4px;
+    border-radius: 4px;
+}
+
+.select-container:hover {
+   
+}
+
+#wordInput {
+    flex: 1;
+    min-width: 0; 
+    padding: 0 0 0 35px;
+    margin: 0;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    color: #202124;
+}
+
+#wordInput::placeholder {
+    color: #9AA0A6;
+    opacity: 1;
+}
+
+
+.submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #4285f4;
+    cursor: pointer;
+    padding: 0 8px;
+    font-size: 20px;
+    opacity: 0.9;
+    min-width: 30px;
+    height: 100%;
+}
+
+.submit-btn:hover {
+    opacity: 1;
+}
+
+.inputContainer > * {
+    flex-shrink: 0;
+}
+
+[draggable="o"] {
+    cursor: pointer;
+}
+
+[draggable="x"] {
+    cursor: not-allowed;
+}
+
+#colorSelect {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #5F6368;
+    padding: 5px 8px;
+    margin: 0 0px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+    padding-right: 24px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+/* hover 效果 */
+#colorSelect:hover {
+    
+}
+
+/* 選項樣式 */
+#colorSelect option {
+    padding: 8px;
+    background-color: white;
+}
+
+select {
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+#colorSelectMenu {
+    margin-top: 2px;
+    display: block;
+}
+.cardColor-1 {
+    background-color: lightcoral;
+}
+.cardColor-2 {
+    background-color: lightsalmon;
+}
+.cardColor-3 {
+    background-color: lightgoldenrodyellow;
+}
+.cardColor-4 {
+    background-color: lightgreen;
+}
+.cardColor-5 {
+    background-color: lightblue;
+}
+.cardColor-6 {
+    background-color: lavender;
+}
+.cardColor-7 {
+    background-color: lightgray;
+}
+.cardColor-8 {
+    background-color: white;
+}
+.cardColor-9 {
+    background-color: transparent;
+}
+
+#contextMenu {
+    position: absolute;
+    background-color: white;
+    border: 0.8px solid gray;
+    padding: 8px;
+    line-height: 20px;
+    cursor: pointer;
+	font-size: 14px;
+    user-select: none;
+	z-index: 999;
+}
+#contextMenu div:hover {
+    background-color: lightgray;
+}
+
+.selected {
+    border: 2px solid blue;
+}
+#selectBox {
+    position: fixed;
+    border: 1px dashed #000;
+    background: rgba(0, 123, 255, 0.1);
+    display: none;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#infinite-canvas {
+    position: absolute;
+    transform-origin: 0 0;
+    width: 100000px;
+    /* 設置較大的初始寬度 */
+    height: 100000px;
+    /* 設置較大的初始高度 */
+    z-index: 1;
+}
+
+.tool-controls {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.zoom-controls {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 999;
+}
+
+.zoom-controls button {
+    width: 40px;
+    height: 40px;
+    margin: 2px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+}
+
+.zoom-controls button:hover {
+    background: #f5f5f5;
+}
+
+.wordCard.selected {
+    border: 2px solid #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/*
+#selectBox {
+    position: absolute;
+    border: 1px dashed #000;
+    background: rgba(0, 123, 255, 0.1);
+    z-index: 100;
+    pointer-events: none;
+}
+*/
+#selectBox {
+    position: fixed;
+    border: 2px dashed #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+    pointer-events: none;
+    z-index: 100;
+}
+
+body.selecting {
+    cursor: crosshair;
+}
+
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+
+#trashCan {
+    width: 32px;
+    height: 32px;
+    background-image: url('trash-icon.png');
+    background-size: cover;
+}
+
+#selectModeButton.active {
+    background-color: #4CAF50;
+    color: #fff;
+    border-color: #45a049;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#viewModeButton.active {
+    background-color: #4CAF50;
+    color: white;
+}
+a {
+    text-decoration: none;
+}
+.temp-input {
+    position: fixed;
+    transform-origin: center;
+	background-color: #f3f3f3;
+    z-index: 1000;
+    padding: 4px;
+    border: none;
+	outline: none;
+    border-radius: 4px;
+    font-size: 16px;
+    min-width: 100px;
+}
+
+
+.bg-controls {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 999;
+}
+
+.current-color {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+.current-color:hover {
+    transform: scale(1.1);
+}
+
+.color-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    transition: transform 0.2s;
+}
+
+.color-circle:hover {
+    transform: scale(1.1);
+}
+
+.color-circle[data-color="white"] {
+    border-color: #ccc;
+}
+
+#bgColorMenu {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  background: transparent; 
+  display: flex;
+  gap: 8px;
+  visibility: hidden;
+
+}
+#bgColorMenu.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+</style>
+<base target="_blank">
+</head>
+
+<body>
+
+<div id="canvas-container">
+    <div id="infinite-canvas"></div>
+</div>
+
+<div class="tool-controls">
+		<div class="inputContainer">			
+			<input type="text" id="wordInput" placeholder="..."
+            enterkeyhint="done">				
+    <div class="select-container">
+        <select id="colorSelect">
+            <option value="" disabled>底色</option>
+            <option value="0" selected>彩</option>
+            <option value="1">紅</option>
+            <option value="2">橘</option>
+            <option value="3">黃</option>
+            <option value="4">綠</option>
+            <option value="5">藍</option>
+            <option value="6">紫</option>
+            <option value="7">灰</option>
+            <option value="8">白</option>
+            <option value="9">無</option>
+        </select>
+    </div>			
+<div class="separator"></div>		
+			  <button id="submitBtn" class="submit-btn">✚</button>
+		</div>		
+</div>
+
+<div class="bg-controls">
+    <div class="color-circle current-color" title="背景色"></div>
+	<div id="bgColorMenu"> 
+		<div class="color-circle" data-color="rgb(198,208,188)" style="background-color: rgb(198,208,188);"></div>
+		<div class="color-circle" data-color="rgb(168,178,158)" style="background-color: rgb(168,178,158);"></div>
+        <div class="color-circle" data-color="rgb(240,240,240)" style="background-color: rgb(240,240,240);"></div>
+        <div class="color-circle" data-color="rgb(200,200,200)" style="background-color: rgb(200,200,200);"></div>
+        <div class="color-circle" data-color="rgb(120,120,120)" style="background-color: rgb(120,120,120);"></div>
+        <div class="color-circle" data-color="rgb(80,80,80)" style="background-color: rgb(80,80,80);"></div>
+		 <div class="color-circle" data-color="rgb(30,30,30)" style="background-color: rgb(30,30,30);"></div>
+		<div class="color-circle" data-color="white" style="background-color: white;"></div>	
+	</div>
+
+</div>
+
+<div class="zoom-controls">
+    <button id="updateFiles" onclick="redirectToUrl()" ondblclick="updateFiles()" style="display: none;" title="新檔">新</button>
+    <button id="shareButton" onclick="shareWordCards()" title="分享">分</button>
+    <button id="selectModeButton" title="選取">選</button>
+	<button id="viewModeButton" title="檢視">▶︎</button>
+    <button onclick="resetZoom()" title="原比例">↺</button>
+    <button onclick="zoomIn()" title="拉近">+</button>
+    <button onclick="zoomOut()" title="退遠">-</button>	
+</div>
+
+<script src="script.js?v=Sing01"></script>
+<script src="nof5.js?v=740"></script>
+
+</body>
+</html>
